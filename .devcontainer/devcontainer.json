@@ -1,0 +1,68 @@
+{
+  "name": "latex-dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "runArgs": ["--name=latex-devcontainer"],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "james-yu.latex-workshop",
+        "mathematic.vscode-latex",
+        "ms-azuretools.vscode-docker",
+        "meezilla.json",
+        "esbenp.prettier-vscode",
+        "openai.chatgpt"
+      ],
+      "settings": {
+        "latex-workshop.view.pdf.viewer": "tab",
+        "latex-workshop.view.pdf.ref.viewer": "tab",
+        "latex-workshop.view.pdf.internal.synctex.keybinding": "double-click",
+        "latex-workshop.view.pdf.dark.mode.enabled": false,
+
+        "latex-workshop.latex.outDir": "out",
+        "latex-workshop.latex.autoBuild.run": "onSave",
+        "latex-workshop.latex.clean.method": "onBuilt",
+        "latex-workshop.latex.clean.subfolder.enabled": true,
+
+        "latex-workshop.latex.recipes": [
+          {
+            "name": "latexmk (pdf)",
+            "tools": ["latexmk"]
+          }
+        ],
+        "latex-workshop.latex.tools": [
+          {
+            "name": "latexmk",
+            "command": "latexmk",
+            "args": [
+              "-pdf",
+              "-interaction=nonstopmode",
+              "-synctex=1",
+              "-outdir=%OUTDIR%",
+              "%DOC%"
+            ]
+          }
+        ],
+        "latex-workshop.intellisense.package.enabled": true,
+        "latex-workshop.message.log.show": "onError",
+        "latex-workshop.hover.preview.enabled": true,
+
+        "latex-workshop.formatting.latex": "latexindent",
+        "latex-workshop.latexindent.path": "latexindent",
+
+        "editor.formatOnSave": true,
+
+        "[latex]": {
+          "editor.defaultFormatter": "James-Yu.latex-workshop"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      }
+    }
+  }
+}
