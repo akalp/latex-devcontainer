@@ -9,3 +9,4 @@ out/
 *.txt
 *.md
 !README.md
+!AGENTS.md
