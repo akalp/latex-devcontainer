@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+PROJECT="$(basename "$ROOT")"
+CONTAINER="latex-$PROJECT"
+
+if ! docker inspect "$CONTAINER" >/dev/null 2>&1; then
+  echo "LaTeX devcontainer is not running: $CONTAINER" >&2
+  echo "Open the project in VS Code Dev Container first." >&2
+  exit 1
+fi
+
+case "${1:-}" in
+  build)
+    FILE="${2:-main.tex}"
+
+    docker exec \
+      -w /workspace \
+      "$CONTAINER" \
+      latexmk \
+        -pdf \
+        -interaction=nonstopmode \
+        -file-line-error \
+        -synctex=1 \
+        -outdir=out \
+        "$FILE"
+    ;;
+
+  lint)
+    FILE="${2:-main.tex}"
+
+    docker exec \
+      -w /workspace \
+      "$CONTAINER" \
+      chktex "$FILE"
+    ;;
+
+  format)
+    FILE="${2:-main.tex}"
+
+    docker exec \
+      -w /workspace \
+      "$CONTAINER" \
+      latexindent -w "$FILE"
+    ;;
+
+  clean)
+    FILE="${2:-main.tex}"
+
+    docker exec \
+      -w /workspace \
+      "$CONTAINER" \
+      latexmk -C -outdir=out "$FILE"
+    ;;
+
+  *)
+    echo "Usage:"
+    echo "  ./scripts/latex build [file.tex]"
+    echo "  ./scripts/latex lint [file.tex]"
+    echo "  ./scripts/latex format [file.tex]"
+    echo "  ./scripts/latex clean [file.tex]"
+    exit 1
+    ;;
+esac

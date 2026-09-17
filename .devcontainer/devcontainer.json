@@ -3,16 +3,21 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
-  "runArgs": ["--name=latex-devcontainer"],
+
+  // Keep the path inside the container stable so host-side tools such as
+  // OpenCode can execute commands with: docker exec -w /workspace ...
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "workspaceFolder": "/workspace",
+
+  // One predictable container per project. From the host, the name is
+  // latex-<repository-folder-name>.
+  "runArgs": ["--name=latex-${localWorkspaceFolderBasename}"],
+
   "customizations": {
     "vscode": {
       "extensions": [
-        "james-yu.latex-workshop",
-        "mathematic.vscode-latex",
-        "ms-azuretools.vscode-docker",
-        "meezilla.json",
-        "esbenp.prettier-vscode",
-        "openai.chatgpt"
+        "James-Yu.latex-workshop",
+        "esbenp.prettier-vscode"
       ],
       "settings": {
         "latex-workshop.view.pdf.viewer": "tab",
@@ -22,7 +27,11 @@
 
         "latex-workshop.latex.outDir": "out",
         "latex-workshop.latex.autoBuild.run": "onSave",
-        "latex-workshop.latex.clean.method": "onBuilt",
+
+        // Keep auxiliary files in out/ for fast incremental latexmk builds.
+        // Use the LaTeX Workshop clean command when a clean rebuild is needed.
+        "latex-workshop.latex.autoClean.run": "never",
+        "latex-workshop.latex.clean.method": "command",
         "latex-workshop.latex.clean.subfolder.enabled": true,
 
         "latex-workshop.latex.recipes": [
@@ -38,18 +47,24 @@
             "args": [
               "-pdf",
               "-interaction=nonstopmode",
+              "-file-line-error",
               "-synctex=1",
               "-outdir=%OUTDIR%",
               "%DOC%"
             ]
           }
         ],
+
+        "latex-workshop.linting.run": "onSave",
+        "latex-workshop.linting.chktex.enabled": true,
+        "latex-workshop.linting.chktex.exec.path": "chktex",
+
         "latex-workshop.intellisense.package.enabled": true,
         "latex-workshop.message.log.show": "onError",
         "latex-workshop.hover.preview.enabled": true,
 
         "latex-workshop.formatting.latex": "latexindent",
-        "latex-workshop.latexindent.path": "latexindent",
+        "latex-workshop.formatting.latexindent.path": "latexindent",
 
         "editor.formatOnSave": true,
 
